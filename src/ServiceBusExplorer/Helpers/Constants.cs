@@ -75,5 +75,7 @@ namespace Microsoft.Azure.ServiceBusExplorer.Helpers
         public static readonly Type MessageType = typeof(BrokeredMessage);
         public static readonly Type GuidType = typeof(Guid);
         public static readonly Type ObjectType = typeof(object);
+        public const string DateTimeUtcFormatString = "yyyy'-'MM'-'dd HH':'mm':'ss'Z'"; //Sample: "2014-04-25 14:28:04Z"
+        public const string ConcatStringFormatTwoValues = "{0}: {1}";
     }
 }

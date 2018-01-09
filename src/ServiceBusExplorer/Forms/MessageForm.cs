@@ -102,7 +102,10 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
 
             messagePropertyGrid.SelectedObject = brokeredMessage;
 
-            txtMessageText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out _)));
+            //txtMessageText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out _))); //Dynamics365 related change
+            BodyType bodyType;
+            txtMessageText.Text = JsonSerializerHelper.Indent(XmlHelper.Indent(serviceBusHelper.GetMessageText(brokeredMessage, out bodyType)));
+            cboBodyType.SelectedIndex = cboBodyType.FindStringExact(bodyType.ToString());
 
             // Initialize the DataGridView.
             bindingSource.DataSource = new BindingList<MessagePropertyInfo>(brokeredMessage.Properties.Select(p => new MessagePropertyInfo(p.Key,
@@ -328,20 +331,52 @@ namespace Microsoft.Azure.ServiceBusExplorer.Forms
                             if (brokeredMessage != null)
                             {
                                 // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                outboundMessage = bodyType == BodyType.ByteArray ?
-                                                  brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text) :
-                                                  brokeredMessage.Clone(txtMessageText.Text);
+                                //outboundMessage = bodyType == BodyType.ByteArray ? //Dynamics365 related change
+                                //                  brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text) :
+                                //                  brokeredMessage.Clone(txtMessageText.Text);
+
+                                switch (bodyType)
+                                {
+                                    case BodyType.ByteArray: // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                                        outboundMessage = brokeredMessage.CloneWithByteArrayBodyType(txtMessageText.Text);
+                                        break;
+                                    case BodyType.Clone: // E.g. used for Dynamics messages to clone the content 1:1                                       
+                                        outboundMessage = brokeredMessage.Clone();
+                                        break;
+                                    case BodyType.Stream:
+                                    case BodyType.String:
+                                    case BodyType.Wcf:
+                                    default:
+                                        outboundMessage = brokeredMessage.Clone(txtMessageText.Text);
+                                        break;
+                                }
                             }
                             else
                             {
                                 var messageText = serviceBusHelper.GetMessageText(message, out bodyType);
 
                                 // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
-                                outboundMessage = bodyType == BodyType.ByteArray ?
-                                                  message.CloneWithByteArrayBodyType(messageText) :
-                                                  message.Clone(messageText);
+                                //outboundMessage = bodyType == BodyType.ByteArray ? //Dynamics365 related change
+                                //                  message.CloneWithByteArrayBodyType(messageText) :
+                                //                  message.Clone(messageText);
+
+                                switch (bodyType)
+                                {
+                                    case BodyType.ByteArray: // For body type ByteArray cloning is not an option. When cloned, supplied body can be only of a string or stream types, but not byte array :(
+                                        outboundMessage = message.CloneWithByteArrayBodyType(messageText);
+                                        break;
+                                    case BodyType.Clone: // E.g. used for Dynamics messages to clone the content 1:1                               
+                                        outboundMessage = message.Clone();
+                                        break;
+                                    case BodyType.Stream:
+                                    case BodyType.String:
+                                    case BodyType.Wcf:
+                                    default:
+                                        outboundMessage = message.Clone(messageText);
+                                        break;
+                                }
                             }
-                            
+
                             outboundMessage = serviceBusHelper.CreateMessageForApiReceiver(outboundMessage,
                                                                                            0,
                                                                                            chkNewMessageId.Checked,

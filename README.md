@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/x5niu29yhun36hda/branch/master?svg=true)](https://ci.appveyor.com/project/seanfeldman/servicebusexplorer/branch/master)
 
 **Author:** Paolo Salvatori ([@babosbird](https://twitter.com/babosbird))
-**Contributor:**  Sean Feldman ([@sfeldman](https://twitter.com/sfeldman)) and [more](https://github.com/paolosalvatori/ServiceBusExplorer/graphs/contributors)
+**Contributor:**  Sean Feldman ([@sfeldman](https://twitter.com/sfeldman)) Markus Konrad ([@konrad_markus](https://twitter.com/konrad_markus)) and [more](https://github.com/paolosalvatori/ServiceBusExplorer/graphs/contributors)
 
 # Service Bus Explorer for Dynamics
 Fork from general Service Bus Explorer project to handle Dynamics365 related Service Bus Messages.
